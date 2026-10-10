@@ -1,0 +1,16 @@
+crypto/target/
+__pycache__/
+*.pyc
+.pytest_cache/
+.hypothesis/
+.venv/
+results/
+measurements/
+findings-*/
+findings-*.zip
+longhist-*/
+run/
+*.db
+*.db-wal
+*.db-shm
+run-*/

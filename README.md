@@ -103,6 +103,7 @@ The archive holds `manifest.json`, `env.json` (machine, versions, source hash), 
 | m12 | `partition` | availability under partition |
 | f10, f11 | `mass`, `recovery` | mass trace, recovery against refusing banks |
 | m13 | `python -m sealedtrail.measure.longhist` | cone and hold on long, skewed histories |
+| m14 | `python -m sealedtrail.measure.sharehold` | share-bounded hold from certified taint bounds (`sealedtrail/sharecert.py` has the proofs) |
 | m14 | `capacity` | per-validator capacity |
 
 Individual measurements: `python3 -m sealedtrail.measure <command> [--out DIR]` (`all` runs everything).

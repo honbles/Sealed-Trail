@@ -31,12 +31,18 @@ ROOT = Path(__file__).resolve().parents[1]
 PY = sys.executable
 MB_PER_NODE = 70
 PROFILES = {
-    "smoke": dict(tests=False, measure=["proof"], ladder=[3], ramp=[], longhist=[]),
-    "quick": dict(tests=True, measure="all", ladder=[5, 10], ramp=[], longhist=["quick"]),
-    "full":  dict(tests=True, measure="all", ladder=[5, 10, 20, 50], ramp=[4, 8, 16, 32, 64], longhist=["full"]),
-    "max":   dict(tests=True, measure="all", ladder=[5, 10, 20, 50, 100], ramp=[4, 8, 16, 32, 64], longhist=["full", "sens", "max"]),
+    "smoke": dict(tests=False, measure=["proof"], ladder=[3], ramp=[], longhist=[], sharehold=[]),
+    "quick": dict(tests=True, measure="all", ladder=[5, 10], ramp=[], longhist=["quick"], sharehold=["quick"]),
+    "full":  dict(tests=True, measure="all", ladder=[5, 10, 20, 50], ramp=[4, 8, 16, 32, 64], longhist=["full"], sharehold=["quick", "full"]),
+    "max":   dict(tests=True, measure="all", ladder=[5, 10, 20, 50, 100], ramp=[4, 8, 16, 32, 64], longhist=["full", "sens", "max"], sharehold=["quick", "full", "max", "log"]),
 }
 LONGHIST_TIMEOUT = {"quick": 900, "full": 3600, "sens": 5400, "max": 14400}
+SHAREHOLD = {   # measurement 14: certified-share hold (args, timeout s)
+    "quick": (["--events", "100000", "--per-band", "3", "--k", "12,16,20,24", "--rho-min", "0,1e-6,1e-5,1e-4,1e-3"], 1800),
+    "full": (["--events", "1000000", "--per-band", "2", "--k", "20,24,32", "--rho-min", "0,1e-6,1e-5"], 3600),
+    "max": (["--events", "10000000", "--per-band", "1", "--k", "24", "--rho-min", "0"], 7200),
+    "log": (["--events", "100000", "--per-band", "3", "--grid", "log", "--k", "1,2,4,8,16", "--rho-min", "0"], 1800),
+}
 
 
 def sh(cmd: list, log: Path, timeout: int, cwd: Path = ROOT, env: dict | None = None) -> tuple[int, float]:
@@ -135,6 +141,9 @@ def main():
     for p in prof["longhist"]:                              # last: the long runs must not hold up the cheap, essential steps
         steps.append((f"longhist_{p}", "cmd", [PY, "-m", "sealedtrail.measure.longhist", "--profile", p, "--out", str(out / "measurements")],
                       LONGHIST_TIMEOUT[p]))
+    for p in prof.get("sharehold", []):
+        args, tmo = SHAREHOLD[p]
+        steps.append((f"sharehold_{p}", "cmd", [PY, "-m", "sealedtrail.measure.sharehold", *args, "--out", str(out / "measurements")], tmo))
     only = {s for s in a.only.split(",") if s}
     if only:
         steps = [s for s in steps if s[0] in only]

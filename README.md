@@ -5,7 +5,10 @@ Reference prototype of Sealed Trail, a provenance network for bank payments. It 
 taint-mass accounting with pro-rata fractions, cone construction, holds, openings, reversal and the monitors that check the
 invariants. It runs in three modes: in-process, one local process per node over HTTP, and one Docker container per node.
 
-This is research code. It has had no external cryptographic review.
+This is research code. It has had no external cryptographic review. 
+
+### Preprint
+https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6778718
 
 ## Contents
 
